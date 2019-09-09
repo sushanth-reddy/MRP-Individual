@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="lib/fhir-client-0.1.8.js"></script>
+  </head>
+  <body>
+    Loading...
+    <script type="module">
+      import Config from './js/config.js';
+      FHIR.oauth2.authorize(Config.clientSettings);
+    </script>
+  </body>
+</html>
