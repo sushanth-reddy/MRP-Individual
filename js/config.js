@@ -4,15 +4,17 @@ Config.clientSettings = {
   "client_id": "app-login",
   "scope"    : "patient/*.* openid profile"
 }
+Config.measure = 45;
 
-Config.submitEndpoint = "/Measure/measure-mrp/$submit-data";
+Config.submitEndpoint = "/Measure/"+Config.measure+"/$submit-data";
 
 Config.payerEndpoints = [{
-    "name": "HSPC Payer Demo (Secure)",
+    "name": "HSPC Payer Demo (Secure)", 
     "type": "secure-smart",
     // "url": "http://localhost:8080/hapi-fhir-jpaserver/fhir",
     // "url": "http://cdex.mettles.com:8280/ehr-server/stu3",
-    "url": "http://cdex.mettles.com:8080/hapi-fhir-jpaserver/fhir",
+    // "url": "http://cdex.mettles.com:8080/hapi-fhir-jpaserver/fhir",
+    "url": "http://cdex.mettles.com:8181/cqf-ruler/baseDstu3/",
     "clientID": "app-login",
     "scope": "user/*.write" // offline_access
   },{
@@ -79,7 +81,7 @@ Config.scenarios = {
   "patient01": {
     "lists": ["list01", "list02"],
     "location": "7510r2",
-    "description": "Mr. Amy Shaw is a 72 y.o. male who was discharged from the hospital 10 days ago. He was admitted for an exacerbation of heart failure due to fluid overload due to dietary changes. His weight had increased by 15 pounds compared to his last outpatient visit 6 weeks earlier. His echocardiogram showed a stable ejection fraction of 25% compared to 8 months prior. He was treated with diuretics, and his medications were adjusted at discharge.<br/><br/>As the follow-up physician, you will be reconciling Mr. Webster's discharge medication list against his last outpatient medication list."
+    "description": "Mr. Jairo Webster is a 72 y.o. male who was discharged from the hospital 10 days ago. He was admitted for an exacerbation of heart failure due to fluid overload due to dietary changes. His weight had increased by 15 pounds compared to his last outpatient visit 6 weeks earlier. His echocardiogram showed a stable ejection fraction of 25% compared to 8 months prior. He was treated with diuretics, and his medications were adjusted at discharge.<br/><br/>As the follow-up physician, you will be reconciling Mr. Webster's discharge medication list against his last outpatient medication list."
   },
   "patient02": {
     "lists": ["list03", "list04"],
@@ -131,7 +133,8 @@ Config.operationPayload = {
             "status": "complete",
             "type": "individual",
             "measure": {
-                "reference": "https://ncqa.org/fhir/ig/Measure/measure-mrp"
+                // "reference": "https://ncqa.org/fhir/ig/Measure/measure-mrp"
+                "reference": "Measure/"+Config.measure
             },
             "patient": {
                 "reference": "Patient/PATIENTID"

@@ -5,7 +5,8 @@ import Config from './config.js';
 let MRP = {
     client: null,
     patient: null,
-    reconciledMeds: []
+    reconciledMeds: [],
+    measureList:[],
 }
 
 MRP.getRandomInt = (min, max) => {
@@ -141,6 +142,7 @@ MRP.generatePayload = (patientResource, practitionerResource, organizationResour
     measurereport.resource.date = timestamp;
     measurereport.resource.period.start = timestamp;
     measurereport.resource.period.end = timestamp;
+    measurereport.resource.measure.reference = Config.measure;
     measurereport.resource.reportingOrganization.reference = "Organization/" + organization.resource.id;
     measurereport.resource.evaluatedResources.extension[0].valueReference.reference = "Task/" + task.resource.id;
     task.resource.for.reference = "Patient/" + patient.resource.id;
@@ -190,7 +192,7 @@ MRP.loadData = async (client) => {
         let lists = await MRP.client.patient.api.fetchAll(
             { type: "List", query: {_id: slists.join(",")} }
         );
-        
+        await MRP.loadMeasures(client);
         let medPromises = [];
         for (let l of lists) {
             $('#medrec-lists').append("<h4>" + l.title + " - " + l.date + "</h4>" +
@@ -240,6 +242,26 @@ MRP.loadData = async (client) => {
         MRP.displayErrorScreen("Failed to initialize scenario", "Please make sure to launch the app with one of the following sample patients: " + Object.keys(Config.scenarios).join(", "));
     }
 }
+
+
+
+MRP.loadMeasures = async (client) => {
+    try {
+        client.api.fetchAll(
+            {type: "Measure"}
+        ).then(function (results) {
+            // $('#').empty();
+            MRP.measureList = results;
+            results.forEach((measure) => {
+                $('#measure-select').append("<option value="+measure.id+">"+measure.title+"</option>")
+
+            });
+        });
+    } catch (err) {
+        MRP.displayErrorScreen("Failed to get measures", "Please make sure that everything is OK with request configuration");
+    }
+}
+
 
 MRP.reconcile = async () => {
     let timestamp = MRP.now();
@@ -344,7 +366,6 @@ MRP.reconcile = async () => {
     //     MRP.client.patient.api.search({type: "Coverage", query: {subscriber: MRP.client.patient.id}})
     // ]);
     let res = await Promise.all(dataToLoad);
-    console.log(res,'what res')
 
     let location = ''
     let coverage = ''
@@ -375,7 +396,6 @@ MRP.reconcile = async () => {
             }
         }
         else{
-            console.log(res[j],'what prac')
             practitioner = res[j]
         }
         
@@ -442,6 +462,13 @@ MRP.initialize = (client) => {
     }
 }
 
+MRP.measureSelect=() => {
+    let selection = $('#measure-select').val();
+    console.log(selection,'please work')
+    Config.measure = selection
+    console.log(Config.measure,'yess')
+
+}
 MRP.loadConfig = () => {
     let configText = window.localStorage.getItem("mrp-app-config");
     if (configText) {
@@ -459,7 +486,7 @@ MRP.loadConfig = () => {
 MRP.finalize = async () => {
     var config = {
         type: 'POST',
-        url: Config.payerEndpoint.url + Config.submitEndpoint,
+        url: Config.payerEndpoint.url + "/Measure/"+Config.measure+"/$submit-data",
         data: JSON.stringify(Config.operationPayload),
         contentType: "application/fhir+json"
     };
@@ -489,6 +516,7 @@ $('#btn-start').click(MRP.displayMedRecScreen);
 $('#btn-edit').click(MRP.displayMedRecScreen);
 $('#btn-submit').click(MRP.reconcile);
 $('#btn-configuration').click(MRP.displayConfigScreen);
+$("#measure-select").click(MRP.measureSelect)
 $('#btn-config').click(() => {
     let selection = $('#config-select').val();
     if (selection !== 'custom') {

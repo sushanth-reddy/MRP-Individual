@@ -38,6 +38,14 @@
             This medication reconciliation was done post-discharge
             <input type="checkbox" id="chk-post-discharge" checked="checked">
         </p></div>
+        <h2>Select Measure: <span id="review-name"></span></h2>
+        <!-- <div id="discharge-selection"><p>
+            This medication reconciliation was done post-discharge
+            <input type="checkbox" id="chk-post-discharge" checked="checked">
+        </p></div> -->
+        <div id="measure-selection">
+            <select  class='custom-select' id="measure-select"></select>
+        </div>
         <div id="review-lists"><p><div class='dvt'>
             <table class='table alert-warning'><thead><tr><th>Medication</th><th>Dosage</th><th>Route</th></tr></thead><tbody id='final-list'></tbody></table>
         </div></p></div>
