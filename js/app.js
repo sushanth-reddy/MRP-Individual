@@ -177,10 +177,12 @@ MRP.loadData = async (client) => {
         MRP.client = client;
         console.log(MRP.client,'police')
         let pid = MRP.client.patient.id;
-        let slists = Config.scenarios[pid].lists;
+        // let slists = Config.scenarios[pid].lists;
 
-        $('#scenario-intro').html(Config.scenarios[pid].description);
-        MRP.displayIntroScreen();
+        // $('#scenario-intro').html(Config.scenarios[pid].description);
+        // MRP.displayIntroScreen();
+        MRP.displayMedRecScreen();
+        
         console.log(MRP.client.patient.read().then((pat)=>{console.log(pat,'car')}),'train')
         MRP.client.patient.read().then((pt) => {
             console.log(pt,'ptt')
@@ -188,9 +190,10 @@ MRP.loadData = async (client) => {
             MRP.displayPatient (pt);
         });
         console.log(MRP,'MRp')
+        let slists =["list01", "list02"]
 
         let lists = await MRP.client.patient.api.fetchAll(
-            { type: "List", query: {_id: slists.join(",")} }
+            { type: "List", query: {_id:slists.join(",") }}
         );
         await MRP.loadMeasures(client);
         let medPromises = [];
@@ -218,10 +221,13 @@ MRP.loadData = async (client) => {
         }
 
         let res = await Promise.all(medPromises);
+    
         for (let r of res) {
             let med = r.res.data;
+            console.log('hereeee')
             let medName = MRP.getMedicationName(med.medicationCodeableConcept.coding);
             let dosage = med.dosageInstruction[0].text; // TODO: Construct dosage from structured SIG
+            console.log('log')
             let routeCode = med.dosageInstruction[0].route.coding[0]; // TODO: do not assume first dosageInstruction, coding, etc is relevant (throughout the app)
             let route = (routeCode.system === "http://snomed.info/sct" && routeCode.code === "26643006") ? "oral" : "other";
             // let status = med.status; // TODO: Make use of status
@@ -237,6 +243,7 @@ MRP.loadData = async (client) => {
 
         $("#spinner").hide();
         $("#medrec-meds").show();
+        MRP.displayMedRecScreen();
     } catch (err) {
         console.log (err);
         MRP.displayErrorScreen("Failed to initialize scenario", "Please make sure to launch the app with one of the following sample patients: " + Object.keys(Config.scenarios).join(", "));
