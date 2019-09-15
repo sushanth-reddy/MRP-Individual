@@ -13,8 +13,8 @@ Config.payerEndpoints = [{
     "type": "secure-smart",
     // "url": "http://localhost:8080/hapi-fhir-jpaserver/fhir",
     // "url": "http://cdex.mettles.com:8280/ehr-server/stu3",
-    // "url": "http://cdex.mettles.com:8080/hapi-fhir-jpaserver/fhir",
-    "url": "http://cdex.mettles.com:8181/cqf-ruler/baseDstu3/",
+    "url": "http://cdex.mettles.com:8080/hapi-fhir-jpaserver/fhir",
+    // "url": "http://cdex.mettles.com:8181/cqf-ruler/baseDstu3/",
     "clientID": "app-login",
     "scope": "user/*.write" // offline_access
   },{
